@@ -14,7 +14,20 @@ class CrawlerStrategy:
 class PrinterStrategy(CrawlerStrategy):
     def execute(self, soup):
         for s in soup.stripped_strings:
-            print(s)
+            print(">>>", s)
+
+
+class TagStrategy(CrawlerStrategy):
+    def execute(self, soup):
+        tags = {}
+        for s in soup.stripped_strings:
+            for t in s.split():
+                if t not in tags:
+                    tags[t] = 1
+                else:
+                    tags[t] += 1
+        for k, v in sorted(tags.items()):
+            print(f'{v:3}', k)
 
 
 class Crawler:
