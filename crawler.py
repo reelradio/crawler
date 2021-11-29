@@ -31,11 +31,9 @@ class TagStrategy(CrawlerStrategy):
 
 
 class Crawler:
-    def __init__(self, url, strategy: CrawlerStrategy, **kwargs):
+    def __init__(self, url: str, **kwargs):
         self.url = url
-        if not isinstance(strategy, CrawlerStrategy):
-            raise TypeError("strategy must be implementation of CrawlerStrategy")
-        self.strategy = strategy
+        self.strategy = kwargs.get('strategy', CrawlerStrategy())
         self.relative_urls = kwargs.get('relative_urls', True)
         self.explore = kwargs.get('explore', True)
         self.depth = 0
