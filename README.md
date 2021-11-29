@@ -4,40 +4,45 @@ A web crawler with different strategies
 
 ## How to use
 
-At minimum, supply a `url` and a `CrawlerStrategy` to the constructor, then use `crawl()`:
+At minimum, supply a `url` to the constructor, then use `crawl()`:
 
 ```py
-c = Crawler('http://reelradio.com', CrawlerStrategy())
+c = Crawler('https://xkcd.com')
 c.crawl()
 ```
 
-Configure the crawler by passing more parameters to the constructor:
+Specify the maximum recursion depth, and only take absolute links:
 
 ```py
-# crawl yahoo, only taking absolute links, to a max depth of 3
-c = Crawler('https://yahoo.com', CrawlerStrategy(), relative_urls=False, max_depth=3)
+c = Crawler('https://yahoo.com', relative_urls=False, max_depth=3)
 c.crawl()
+```
 
+Ignore links starting with or ending with keywords, and indent the output based on recursion depth:
 
-# crawl and ignore links starting with #, or ending with pdf/java,
-# and indent the output based on recursion depth
-c = Crawler('https://zedchance.github.io/notes', CrawlerStrategy(),
+```py
+c = Crawler('https://zedchance.github.io/notes',
             ignore_prefixes=('#',),
-            ignore_suffixes=('pdf', 'java'),
+            ignore_suffixes=('pdf', 'java', 'docx', 'pptx'),
             indent_depth=True)
+c.crawl()
+```
 
-# Print out all text from xkcd, no recursive crawling
-c = Crawler('https://xkcd.com', PrinterStrategy(), explore=False)
+Note that `ignore_prefixes` and `ignore_suffixes` take tuples of strings as the parameter.
 
-# or setup a dictionary
+Or build a dictionary:
+
+```py
 config = {
     "explore": True,
     "relative_urls": True,
     "max_depth": 3,
     "ignore_prefixes": ('http', 'mailto', '#'),
+    "ignore_suffixes": ('docx', ),
     "indent_depth": True,
 }
-c = Crawler('http://reelradio.com/index.html', CrawlerStrategy(), ** config)
+c = Crawler('http://reelradio.com/index.html', **config)
+c.crawl()
 ```
 
 ### Strategies
@@ -50,5 +55,22 @@ class MyStrategy(CrawlerStrategy):
         # do stuff with soup
 ```
 
-- `PrinterStrategy` prints out all text from the page.
+- `CrawlerStrategy` is the default strategy if no parameter is passed, this strategy does nothing
+- `PrinterStrategy` prints out all text from the page
 - `TagStrategy` generates a list of words and occurences
+
+When testing strategies it is convenient to use `explore=False` to only visit the first page.
+
+To print out the page's text:
+
+```py
+c = Crawler('https://xkcd.com', strategy=PrinterStrategy(), explore=False)
+c.crawl()
+```
+
+To see a list of tags:
+
+```py
+c = Crawler('https://xkcd.com', strategy=TagStrategy(), explore=False)
+c.crawl()
+```
