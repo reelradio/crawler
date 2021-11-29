@@ -27,7 +27,8 @@ class TagStrategy(CrawlerStrategy):
                 else:
                     tags[t] += 1
         for k, v in sorted(tags.items()):
-            print(f'{v:3}', k)
+            print(k, end=" ")
+        print('\n')
 
 
 class Crawler:
@@ -62,10 +63,10 @@ class Crawler:
                 return
             soup = BeautifulSoup(page.content, 'html.parser')
             visited[current_url] = page.status_code
+            print(">", " " * self.depth if self.indent_depth else "", self.depth, visited[current_url], page.url)
 
             # perform strategy
             if page.status_code == 200:
-                print(" " * self.depth if self.indent_depth else "", self.depth, visited[current_url], current_url)
                 self.strategy.execute(soup)
             else:
                 return
